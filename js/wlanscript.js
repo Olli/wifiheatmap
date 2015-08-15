@@ -92,7 +92,7 @@
   })();
 
   window.onload = function() {
-    return $.get("./wifilog.csv", function(data) {
+    return $.get("data/wifilog.csv", function(data) {
       var key, map, netdata;
       netdata = new WiFiData(data);
       $.each(netdata.wlandata, function(key, value) {
