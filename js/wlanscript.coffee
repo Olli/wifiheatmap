@@ -82,7 +82,7 @@ class HMMap
 
 
 window.onload = ->
-  $.get "./wifilog.csv", (data) ->
+  $.get "data/wifilog.csv", (data) ->
     netdata = new WiFiData(data)
     $.each netdata.wlandata, (key,value) ->
       $(".wlanselect").append("<option value=\""+key+ "\">"+key+"</option>")
@@ -93,7 +93,6 @@ window.onload = ->
       key = $('.wlanselect option:selected').val()
       map.setHeatMap(key)
       return
-    
+
     key = $('.wlanselect option:first').val()
     map.setHeatMap(key)
-    
