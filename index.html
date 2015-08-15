@@ -2,16 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Leaflet Heatmap Plugin Example</title>
+  <title>Wifi propagation heatmap</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="index, follow" />
-  <meta name="description" content="This example shows a leaflet heatmap layer example for the heatmap.js leaflet plugin" />
-  <meta name="keywords" content="leaflet heatmap, heatmap.js plugin leaflet" />
+  <meta name="description" content="Heatmap that shows the propagation of WIFI signals" />
   <!-- Das neueste kompilierte und minimierte CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
 <!-- Optionales Theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 <style>
   .demo-wrapper {
     margin-bottom: 20px;
@@ -19,7 +18,7 @@
 </style>
 <script src="http://code.jquery.com/jquery-2.1.4.js"></script>
 <!-- Das neueste kompilierte und minimierte JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
   <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
@@ -30,7 +29,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Leaflet Heatmap Example</h1>
+    <h1>Porpagation of WIFI signals of choosen SSID</h1>
     <div class="demo-wrapper">
       <div class="heatmap" id="map-canvas" style="width: 100%; height: 500px;">
 
@@ -38,7 +37,7 @@
     </div>
     <form class="form-inline">
       <div class="form-group">
-        <label for="ssid">WLAN SSID</label>
+        <label for="ssid">WIFI SSID</label>
         <select id="ssid" class="wlanselect form-control"></select>
       </div>
     </form>
