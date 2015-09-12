@@ -1,50 +1,92 @@
 class WiFiData
-  constructor: (@data) ->
-    @parse(@data)
+  constructor: ->
+    @netNames = []
+    @netdata = {}
+    @getData()
 
-  parse: (data) ->
-    csvparsed = Papa.parse(data).data
-    @wlandata = @groupBy(csvparsed)
 
-  groupBy: (inputArr) ->
-    items = {}
-    _this = this
+  # separate data in chunks divided by ssid
+  initprocess: ->
+    nd = @netdata
+    @data.forEach (a) ->
+      if not nd.hasOwnProperty(a["ssid"])
+        nd[a["ssid"]] = []
+      nd[a["ssid"]].push(a)
 
-    $.each inputArr, (index, val) ->
-      key = val[11]
-      if key
-        if(!items[key])
-          items[key] = []
 
-        # bssid, ssid, rssi, lat, lon
-        items[String(key)].push(_this.formatData(val))
-        return
+  putNetNames: ->
+    nets = []
+    @data.forEach (net) ->
+      if not (nets.indexOf(net["ssid"]) > -1)
+        # geht noch nicht
+        nets.push(net["ssid"])
+    @netNames = nets
+    return
 
-    return items
 
-  formatData: (val) ->
-    net = {
-      bssid: val[12],
-      ssid: val[11],
-      count: parseInt(val[13]) ,
-      lat: val[4],
-      lng: val[5]
+  # daten aller netzwerke zusammen
+  getAll: ->
+    data = []
+    _this = @
+    # alle messdaten zusammenwerfen
+    @netNames.forEach (net) ->
+      _this.netdata[net].forEach (value)->
+        data.push(value)
+    return data
+
+  # alle ssid netzwerknamen
+  getNetNames: ->
+    @netNames
+
+  # daten eines netzes
+  getNet: (net) ->
+    @netdata[net]
+
+  # alle daten nach netzen geordnet
+  getLoggings: ->
+    @netdata
+
+  # daten vom server holen
+  # TODO mit paramentern für ssid spezifisches und boundingboxes
+  getData: ->
+    _this = @
+    #$.ajax "data/wifilog.json", (data) ->
+    #  _this.data = data
+    #  _this.initprocess()
+    #  _this.putNetNames()
+    url = 'data/wifilog.json'
+    $.ajax {
+      type: 'GET',
+      url: url,
+      dataType: 'json',
+      async: false,
+      data: {}
+      success: (data) ->
+        _this.data = data
+        _this.initprocess()
+        _this.putNetNames()
+
     }
 
+##
+# klasse für die eigentliche heatmap
 class HMMap
   constructor: (@wlandata)->
     @initmap()
+    @setHeatMap(@wlandata)
     return
 
-  setHeatMap: (key) ->
+  # heatmap initialisieren
+  setHeatMap: (@wlandata) ->
     hmConfig = {
       max: -50,
       min: -99,
-      data: @wlandata[key]
+      data: @wlandata
     }
     @heatmapLayer.setData(hmConfig)
     return
 
+  # parameter setzen
   initmap: (myheatmapdata) ->
     @baseLayer = L.tileLayer(
       'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
@@ -67,7 +109,7 @@ class HMMap
       # which field name in your data represents the latitude - default "lat"
       latField: 'lat',
       # which field name in your data represents the longitude - default "lng"
-      lngField: 'lng',
+      lngField: 'lon',
       # which field name in your data represents the data value - default "value"
       valueField: 'count',
       blur: 1
@@ -80,19 +122,44 @@ class HMMap
     })
     return
 
+# karte mit fenster und auswahlselect
+class HMSite
+  constructor: ->
+    @initializeHeatMap()
+    @setupNetSelectCB()
 
-window.onload = ->
-  $.get "data/wifilog.csv", (data) ->
-    netdata = new WiFiData(data)
-    $.each netdata.wlandata, (key,value) ->
-      $(".wlanselect").append("<option value=\""+key+ "\">"+key+"</option>")
+  # karte initialisieren
+  initializeHeatMap: ->
+    @logging =  new WiFiData()
+    window.wlanmap = @hmap = new HMMap(@logging.getLoggings)
+    @fillSelect()
 
-    window.wlanmap = map = new HMMap(netdata.wlandata)
+  # select füllen
+  fillSelect: ->
+    networks = @logging.netNames
+    # only if there are more than one ssid
+    if networks.length > 1
+      $(".wlanselect").append "<option value=\"all\">Alle</option>"
+
+    networks.forEach (netName) ->
+      $(".wlanselect").append "<option value=\"#{netName}\">#{netName}</option>"
+
+  # callback wenn das select geändert wurde
+  setupNetSelectCB: ->
+    _this = @
 
     $('.wlanselect').on 'change', (event)->
       key = $('.wlanselect option:selected').val()
-      map.setHeatMap(key)
+      if key == 'all'
+        _this.hmap.setHeatMap(_this.logging.getAll())
+      else
+        _this.hmap.setHeatMap(_this.logging.getNet(key))
       return
 
     key = $('.wlanselect option:first').val()
-    map.setHeatMap(key)
+    @hmap.setHeatMap(@logging.getAll)
+    return
+
+
+window.onload = ->
+  new HMSite
