@@ -103,13 +103,13 @@
         maxZoom: 18
       });
       cfg = {
-        "radius": 15,
+        "radius": 35,
         "maxOpacity": .8,
         "scaleRadius": false,
-        "useLocalExtrema": false,
+        "useLocalExtrema": true,
         latField: 'lat',
         lngField: 'lon',
-        valueField: 'count',
+        valueField: 'rssi',
         blur: 1
       };
       this.heatmapLayer = new HeatmapOverlay(cfg);
@@ -132,7 +132,7 @@
 
     HMSite.prototype.initializeHeatMap = function() {
       this.logging = new WiFiData();
-      window.wlanmap = this.hmap = new HMMap(this.logging.getLoggings);
+      window.wlanmap = this.hmap = new HMMap(this.logging.getLoggings());
       return this.fillSelect();
     };
 

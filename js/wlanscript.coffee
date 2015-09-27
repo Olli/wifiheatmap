@@ -98,20 +98,20 @@ class HMMap
 
     cfg = {
       # radius should be small ONLY if scaleRadius is true (or small radius is intended)
-      "radius": 15,
+      "radius": 35,
       "maxOpacity": .8,
       # scales the radius based on map zoom
       "scaleRadius": false,
       # if set to false the heatmap uses the global maximum for colorization
       # if activated: uses the data maximum within the current map boundaries
       #   (there will always be a red spot with useLocalExtremas true)
-      "useLocalExtrema": false,
+      "useLocalExtrema": true,
       # which field name in your data represents the latitude - default "lat"
       latField: 'lat',
       # which field name in your data represents the longitude - default "lng"
       lngField: 'lon',
       # which field name in your data represents the data value - default "value"
-      valueField: 'count',
+      valueField: 'rssi',
       blur: 1
     }
     @heatmapLayer = new HeatmapOverlay(cfg)
@@ -131,7 +131,7 @@ class HMSite
   # karte initialisieren
   initializeHeatMap: ->
     @logging =  new WiFiData()
-    window.wlanmap = @hmap = new HMMap(@logging.getLoggings)
+    window.wlanmap = @hmap = new HMMap(@logging.getLoggings())
     @fillSelect()
 
   # select füllen

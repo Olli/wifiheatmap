@@ -52,7 +52,7 @@ class DB
       puts e.message
       puts e.backtrace.inspect
     ensure
-      
+
     end
 
   end
@@ -66,8 +66,8 @@ class DB
       alti: dataset[6],
       ssid: dataset[11],
       bssid: dataset[12],
-      rssi:  dataset[13],
-      accuracy: dataset[7]
+      rssi:  dataset[13].to_i,
+      accuracy: dataset[7].to_i
     }
     return datahash
   end
